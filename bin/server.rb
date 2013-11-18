@@ -95,14 +95,14 @@ class FormApplication
   MAX_TIMEOUT = 120 # Two hours
 
   # Where to find web erb templates
-  TEMPLATE_DIR   = "./templates"
-  LANGUAGE_REF_DIR = "references"
+  TEMPLATE_DIR      = './templates'
+  LANGUAGE_REF_DIR  = 'references'
 
   # Where to put output files
-  OUTPUT_DIR     = "./output"
+  OUTPUT_DIR        = './output'
 
   # Where to store registry of worker's word completions
-  AMT_WORKER_WORD_LIST = "amt_worker_words.db"
+  AMT_WORKER_WORD_LIST = 'amt_worker_words.db'
 
   require 'erb'
   require 'cgi' # escaping only
@@ -116,10 +116,10 @@ class FormApplication
   # List valid actions for internal use
   VALID_ACTIONS = %w{form add check_worker_id go}
 
-  # 
-  def initialize(lexicon_dir)
+  # Initialise with a lexicon directory
+  def initialize(lexicon_dir = nil)
     @tagparser        = USASTools::SemTag::Parser.new(true)
-    @lexicons          = load_lexicons(lexicon_dir) if lexicon_dir
+    @lexicons         = load_lexicons(lexicon_dir) if lexicon_dir
     @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, "*.erb")).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
 
@@ -437,8 +437,11 @@ end
 
 
 # ==========================================================================
+# Entry point
+#
 
 
+# Load various paths from command line
 LEXICON_ROOT = ARGV[0] || './lexicons'
 STATIC_ROOT  = ARGV[1] || './themes/ucrel'
 DATA_ROOT    = './js-data'
@@ -457,7 +460,9 @@ servlets = {
            }
 
 
-
+# Hook the servlets and start listening
+#
+# Sigint to close
 s = Server.new(servlets)
 s.start
 
