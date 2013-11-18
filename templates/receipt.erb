@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>USAS WSD Translation Task</title>
+	<link href="static/css/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+	<link href="static/css/common.css" rel="stylesheet">
+	<script src="static/js/jquery-1.9.1.js"></script>
+	<script src="static/js/jquery-ui-1.10.3.custom.js"></script>
+	<script src="static/js/jquery.zclip.min.js"></script>
+
+    <!-- Style specific for the copy/paste system. -->
+    <style type="text/css">
+
+        #copy{
+            border: solid 1px #aaa;
+            border-radius: 3px;
+        }
+
+        #copy:hover{
+            background: #eee;
+        }
+
+        #code{
+            font-family: monospace;
+        }
+
+        .greenglow{
+            box-shadow: 0 0 5px green;   
+        }
+
+        span.copyText {
+            position: relative;
+            display: block;
+        }
+        textarea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0 none transparent;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            resize: none;
+            overflow: hidden;
+            font-family: inherit;
+            font-size: 1em;
+        }
+
+
+    </style>
+
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function(){
+
+            // Copy to clipboard button
+            $( "#copy" ).button();
+
+            // And copying functionality
+            $( "#copy" ).zclip({
+                path: "static/js/ZeroClipboard.swf",
+                copy: $( "#code" ).text(),
+                afterCopy: function(){ 
+                        $( "#copy" ).button({ icons: {primary: "ui-icon-check" } });
+                        $( "#copy" ).addClass("greenglow");
+                        return false 
+                    }
+                });
+
+
+            // Thanks to http://stackoverflow.com/a/4172571/973568
+        $('.copyText').click(
+            function() {
+                if ($('#tmp').length) {
+                    $('#tmp').remove();
+                }
+                var clickText = $(this).text();
+                $('<textarea id="tmp" />')
+                    .appendTo($(this))
+                    .val(clickText)
+                    .focus()
+                    .select();
+            return false;
+            });
+        $(':not(.copyText)').click(
+            function(){
+                $('#tmp').remove();
+            });
+
+
+        });
+    </script>
+
+
+ </head>
+<body>
+
+<div id="content">
+
+<h1>USAS Lexicon Translation Receipt</h1>
+
+
+<div id="thanks">
+    <h2>Thank you!</h2>
+</div>
+
+<hr/>
+
+<div>
+    <h3>Receipt Code</h3>
+    <p>Please retain this code as a reference of the entry you've just made:</p>
+    <p><span id="code" class="copyText"><%= receipt_code %></span><p>
+    <button id="copy">Copy to Clipboard</button>
+</div>
+
+</div>
+
+</body>
+</html>

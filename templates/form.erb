@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="<%=language%>">
+<head>
+  <meta charset="utf-8">
+  <title>USAS WSD Translation Task</title>
+  <link href="/static/css/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+  <link href="/static/css/common.css" rel="stylesheet">
+  <script src="/static/js/jquery-1.9.1.js"></script>
+  <script src="/static/js/jquery-ui-1.10.3.custom.js"></script>
+  <script src="/static/js/jquery.timer.js"></script>
+  <script src="/static/js/jquery.loadTemplate-1.2.3.min.js"></script>
+  <script src="/static/js/jquery.base64.min.js"></script>
+
+  <!-- USAS tag documentation data -->
+  <script src="/data/usas.json.js"></script>
+  <!-- Main functionality -->
+  <script type="text/javascript">
+    <%# Timeout set from ruby %>
+    var timeEnding = new Date(new Date().getTime() + (<%= timeout %> * 60 * 1000));
+
+    <%# And the tags pre-loaded from ruby %>
+    var preSelections = <%= JSON.dump(tags) %>;
+  </script>
+  <script src="/static/js/main.js"></script>
+
+  <!-- Styling for everything but the wizard -->
+  <link href="/static/css/form.css" rel="stylesheet"/>
+  <!-- Styling for the overlay wizard and contents -->
+  <link href="/static/css/wizard.css" rel="stylesheet"/>
+
+  <!-- Template used to show a category that is the parent
+       of other categories -->
+  <script type="text/html" id="parentTemplate">
+        <!-- /* -->
+        <!-- <span class="boxlabel" data-content="prefix">Y1.2</span>:-->
+        <span class="boxlabel" data-content="name">Blah</span>
+        <p data-content="description">description</p>
+        <!-- */ -->
+  </script>
+
+  <!-- Template used for leaf nodes -->
+  <script type="text/html" id="leafTemplate">
+        <!-- /* -->
+        <!-- <span class="boxlabel" data-content="prefix">X.X.1: Blah</span> -->
+        <span class="boxlabel" data-content="name">X.X.1: Blah</span>
+        <p data-content="description">description</p>
+
+        <div class="tagButtonWrapper">
+          <button class="posbutton">Select</button>
+          <button class="negbutton">Select</button>
+        </div>
+        <!-- */ -->
+  </script>
+
+
+ </head>
+<body>
+
+<div id="content">
+
+<h1>USAS Lexicon Translation Form</h1>
+
+
+<!-- Information about the task -->
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">Instructions</a></li>
+		<li><a href="#tabs-2">Information</a></li>
+		<li><a href="#tabs-3">Contact</a></li>
+	</ul>
+    <div id="tabs-1">
+        <p>Please label the word below with a number of tags that represent its meaning.  Attach as many, or as few, as you deem appropriate for <strong>all</strong> senses of the word, placing them in descending order of importance.  Tags can be assigned in a positive or negative manner (for example, "occasionally" is tagged negatively for frequency)</p>
+
+        <p>To assign a tag, click on the <code>add tag</code> button, and select a box from the category selection.  This will add an entry in the list, that can then be sorted so that the most commonly used tag is at the top.</p>
+
+        <p>To help you with identifying common senses of a word, we have provided a number of links to dictionaries, thesauri, and corpora (where you can see real-world usage).  The <code>References</code> button will bring these up over the top of other things, so you can still browse the tags.</p>
+    </div>
+    <div id="tabs-2">
+        <p>The task you are being asked to do is part of an effort to translate the <a href="http://ucrel.lancs.ac.uk/usas/" target="_blank">USAS semantic tagger</a>'s lexicon into new languages.  This will allow us to TODO and such.</p>
+
+        <p>It is being funded by whoever, and such</p>
+    </div>
+    <div id="tabs-3">
+        <p>Contact details for further information (possibly).</p>
+    </div>
+</div>
+
+
+<!-- Progressbar -->
+<div id="timerbar">
+  <div id="progressbar">
+      <div class="progress-label">This task has a time limit of <strong id="timelimit"></strong>, expiring at <strong id="timeend"></strong></div>
+  </div>
+</div>
+
+
+
+
+<!-- The word in question -->
+<div>
+    <fieldset>
+        <legend>Term to Classify</legend>
+        <p><span id="theWord"><%=h word%></span></p>
+    </fieldset>
+</div>
+
+
+<!-- Form containing various hidden fields to be populated by js -->
+<form name="input" id="inputForm" action="add" method="post">
+
+    <% if source.downcase == "amt" %>
+        <!-- A utility for workers to check previous work -->
+        <div>
+            <fieldset>
+                <legend>Worker ID</legend>
+                <p>Please enter your worker ID in the box so we can check if you've done this word before.</p>
+                <input type="text" id="workerID" name="worker"/> <button id="workerIDButton">Check</button>
+                <div id="previousWorkAlert"></div>
+            </fieldset>
+        </div>
+
+    <% end %>
+
+    <!-- The sortable tag list. -->
+    <div>
+        <fieldset>
+            <legend>Tags</legend>
+            <p>Please add tags to describe the term, arranging them from the most commonly used sense to the least.</p>
+
+            <!-- Used for sortable list of tags -->
+            <div id="tags">
+                <ul id="taglist">
+                </ul>
+            </div>
+
+            <!-- Button to show overlay and load the wizard -->
+            <button id="newTagButton">Add Tag</button>
+            <button id="showToolsButton">References</button>
+        </fieldset>
+    </div>
+
+
+    <!-- The submit button -->
+    <div id="submit">
+        <%# <h2>Submit</h2> %>
+        <%# <p>Click to submit.  You will be taken to a page with a confirmation code on it.</p> %>
+        <button id="submitButton">Submit</button>
+    </div>
+
+
+    <!-- Form elements for easier-to-process data -->
+    <input type="hidden" id="wordField" name="word" value="<%= word.gsub(/"/, '')%>"/>
+    <input type="hidden" name="from" value="<%= source %>"/>
+    <input type="hidden" id="tagsField" name="tags" value=""/>
+    <input type="hidden" id="timeField" name="time" value=""/>
+
+</form>
+
+</div> <!-- end content -->
+
+
+<!-- footer -->
+<div id="footer">
+    <p>Page generated at <%=Time.now()%></p>
+    <%# <br>&bull; &bull; &bull;<br> %>
+</div>
+
+
+
+<!-- - =- = - =- =- = -= - =- =  Overlays and dialogs beyodn this point. -= -= - =- = -= - =- =-  -->
+
+
+
+<!-- Overlay used to render the grids -->
+<div id="wizardOverlay" class="ui-widget-overlay"></div>
+<div id="wizardContent" class="ui-widge ui-widget-content ui-corner-all">
+
+    <!-- Breadcrumbs -->
+    <ul id="wizardBreadcrumbs" class="crumb">
+        <!-- <li><a href="#">Home</a></li> -->
+    </ul>
+
+
+
+    <!-- Title and descrioption -->
+    <h3 id="wizardTitle">Select a tag</h3>
+    <p id="wizardDescription">Description of current category goes here.</p>
+
+
+    <!-- Navigation buttons -->
+    <div class="wizardButtons">
+        <button class="backWizardButton">Back</button>
+        <button class="showToolsWizardButton">References</button>
+        <button class="cancelWizardButton">Cancel</button>
+    </div>
+
+
+    <!-- Somewhere to put a load of tagBoxes -->
+    <div id="wizardInnerSelection">
+
+        <!-- <div class="tagbox"> -->
+        <!--   <span class="boxlabel">X.Y.2: Things and Stuff</span> -->
+        <!--   <p>description</p> -->
+        <!-- </div> -->
+
+
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="wizardButtons">
+        <button class="backWizardButton">Back</button>
+        <button class="showToolsWizardButton">References</button>
+        <button class="cancelWizardButton">Cancel</button>
+    </div>
+</div>
+
+<!-- Links to sites for lookup of info about the word -->
+<div id="toolDialog" title="References">
+    <%= refs_html %>
+</div>
+
+
+<!-- Shown when form validation fails. -->
+<div id="validationDialog" title="Form validation">
+    <p>Please add at least one tag</p>
+</div>
+
+<!-- Shown when the time limit expires -->
+<div id="timeoutDialog" title="Out of time">
+    <span class="ui-icon ui-icon-alert" style="float: left; margin: 10px 7px 20px 10px;"></span><p>You are out of time.  Sorry.</p>
+</div>
+
+<!-- Hidden by the JS pullup method.  Used to warn people that the form
+     won't work without js. -->
+<div id="noJSHide">
+    <h3>JavaScript required.</h3>
+    <p>To take this survey, you must have JavaScript enabled, and be running a fairly modern browser (Chrome, Safari, IE or Firefox from the last year or two should be fine.)</p>
+</div>
+
+</body>
+</html>

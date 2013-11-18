@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>USAS WSD Translation Task</title>
+	<link href="static/css/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+	<link href="static/css/common.css" rel="stylesheet">
+	<script src="static/js/jquery-1.9.1.js"></script>
+	<script src="static/js/jquery-ui-1.10.3.custom.js"></script>
+
+    <style type="text/css">
+
+        #reason{
+            border: solid 1px #aaa;
+            padding: 0.3em;
+            font-family: monospace;
+            border-radius: 3px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="content">
+
+<h1>USAS Lexicon Translation Failed</h1>
+<h2>Sorry.</h2>
+
+<hr>
+
+<div id="thanks">
+    
+    <!-- Show reason -->
+    <p>Something went wrong during submission.  The reason given was:</p>
+    <div id="reason">
+        <p><%=h fail_reason%></p>
+    </div>
+
+    <p>Please <a href="mailto:stephenwattam+blcissues@gmail.com">contact us</a> and report this!</p>
+
+</div>
+
+</div>
+
+</body>
+</html>
+
