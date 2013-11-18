@@ -31,7 +31,7 @@ where:
 
 
 
-Visit [http://localhost:8080/go]() for a debug interface.
+Visit [http://localhost:8080/go](http://localhost:8080/go) for a debug interface.
 
 The GET parameters accepted for the main form (`/form`) run to:
 
