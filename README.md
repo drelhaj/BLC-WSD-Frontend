@@ -27,11 +27,11 @@ To run the server on port 8080:
 where:
 
  * `LEXICONS` is a directory containing lexicons (or symlinks thereto) named for their country codes, i.e. `en.c7` for English, 'nl.c7' for Dutch.  Default is `./lexicons`.
- * `THEME_DIR' is a directory served to the client for modification of the theme, containing css, images and js.  Default is `./themes/ucrel'
+ * `THEME_DIR` is a directory served to the client for modification of the theme, containing css, images and js.  Default is `./themes/ucrel`
 
 
 
-Visit [](http://localhost:8080/go) for a debug interface.
+Visit [http://localhost:8080/go]() for a debug interface.
 
 The GET parameters accepted for the main form (`/form`) run to:
 
