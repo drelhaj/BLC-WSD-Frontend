@@ -106,7 +106,7 @@ function addExampleTooltip(elementName, swEx, mwEx){
   if(positive.length > 0)
     str += '<span style="color: green; font-weight: bold;">Positive:</span> ' + positive.join(", ") + '<br>';
   if(negative.length > 0)
-     str += '<span style="color: red; font-weight: bold;">Negative:</span> ' + negative.join(", ");
+    str += '<span style="color: red; font-weight: bold;">Negative:</span> ' + negative.join(", ");
 
   // Apply the tooltip to the element.
   if(positive.length > 0 || negative.length > 0){
