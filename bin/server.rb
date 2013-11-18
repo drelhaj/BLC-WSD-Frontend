@@ -117,9 +117,9 @@ class FormApplication
   VALID_ACTIONS = %w{form add check_worker_id go}
 
   # 
-  def initialize(lexicon_filename = nil)
+  def initialize(lexicon_dir)
     @tagparser        = USASTools::SemTag::Parser.new(true)
-    @lexicon          = load_lexicon(lexicon_filename) if lexicon_filename
+    @lexicons          = load_lexicons(lexicon_dir) if lexicon_dir
     @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, "*.erb")).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
 
@@ -176,7 +176,7 @@ class FormApplication
 
     # Load tags, if we have a lexicon
     tags    = []
-    tags    = load_tags(word) if @lexicon
+    tags    = load_tags(language, word) if @lexicons[language]
 
     refs_html = compose_template(File.join(LANGUAGE_REF_DIR, language), binding)
     return compose_template("form", binding)
@@ -206,21 +206,31 @@ class FormApplication
   private
 
   # Load a lexicon from en existing file
-  def load_lexicon(filename)
+  def load_lexicons(dir)
     require 'usastools/lexicon'
 
-    puts "Loading lexicon from #{filename}..."
+    puts "Loading lexicons from #{dir}..."
     pl = USASTools::Lexicon::Parser.new(case_sensitive: false)
-    return pl.parse( filename, Encoding::ISO_8859_1 )
+
+    lexicons = {}
+    Dir.glob( File.join(dir, "*.c7") ).each do |fn|
+      basename = File.basename(fn).gsub(/\.c7/, '')
+      puts " - #{basename}..."
+      lexicons[basename] = pl.parse( fn, Encoding::ISO_8859_1 )
+    end
+
+    puts "Loaded #{lexicons.length} lexicon[s] (#{lexicons.keys.join(", ")})"
+    return lexicons
   end
 
   # Using a lexicon, return a hash to be written into the page code
-  def load_tags(word)
+  def load_tags(language, word)
+    return [] unless @lexicons[language]
     selection = []
 
     # Find tags for all senses
     tags = []
-    @lexicon.get_senses(word).each{ |s| tags += @lexicon.get(word, s) }
+    @lexicons[language].get_senses(word).each{ |s| tags += @lexicons[language].get(word, s) }
 
     # build selection list from tags
     tags.each do |t|
@@ -428,12 +438,15 @@ end
 
 # ==========================================================================
 
+
+LEXICON_ROOT = ARGV[0] || './lexicons'
+STATIC_ROOT  = ARGV[1] || './themes/ucrel'
+DATA_ROOT    = './js-data'
+
+
 # Create a new form handling deely.
-application = FormApplication.new( ARGV[0] )
+application = FormApplication.new( LEXICON_ROOT )
 
-
-STATIC_ROOT = './static'
-DATA_ROOT   = './js-data'
 
 
 # Stack up some servlets for webrick

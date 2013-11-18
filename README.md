@@ -22,9 +22,14 @@ Execution
 
 To run the server on port 8080:
 
-  $ ./bin/server.rb LEXICONS
+    $ ./bin/server.rb LEXICONS THEME_DIR
 
-where `LEXICONS` is a directory containing lexicons (or symlinks thereto) named for their country codes, i.e. `en.c7` for English, 'nl.c7' for Dutch.
+where:
+
+ * `LEXICONS` is a directory containing lexicons (or symlinks thereto) named for their country codes, i.e. `en.c7` for English, 'nl.c7' for Dutch.  Default is `./lexicons`.
+ * `THEME_DIR' is a directory served to the client for modification of the theme, containing css, images and js.  Default is `./themes/ucrel'
+
+
 
 Visit [](http://localhost:8080/go) for a debug interface.
 
@@ -40,7 +45,7 @@ Generating Input
 ----------------
 The input terms are entered in URL safe Base64.  This is to allow UTF-8 characters to be sent without ambiguity for various clients' systems and browsers.  There is a handy tool to generate these, that reads one-line-per-term files from stdin and outputs a CSV to stdout containing the original term plus the encoded form:
 
-  $ ./bin/b64words.rb < terms.txt > b64_terms.csv
+    $ ./bin/b64words.rb < terms.txt > b64_terms.csv
 
 
 

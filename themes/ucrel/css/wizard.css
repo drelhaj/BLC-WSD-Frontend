@@ -1,0 +1,99 @@
+
+    div.tagbox{
+      position: relative;
+      display: inline-block;
+      width: 14em;
+      min-height: 12em;
+
+      border: solid 1px #454545;
+      overflow: hidden;
+      margin: 0.5em;
+      padding: 0.5em;
+
+      border-radius: 3px;
+      box-shadow: 2px 2px 3px #555;
+      
+      text-align: center;
+    }
+
+    div.parentBox{
+        cursor: pointer;
+    }
+
+    div.tagbox p{
+        margin-bottom: 3em;
+    }
+
+    div.tagbox:hover{
+      background: #eee;
+    }
+
+    div.tagbox span.boxlabel{
+      font-size: 120%;
+      font-weight: bold;
+    }
+
+    #wizardInnerSelection{
+      text-align: center;
+    }
+
+    #wizardTitle{
+      margin-top: 0;
+      text-align: center;
+    }
+
+    #wizardDescription{
+      text-align: center;
+    }
+
+    .tagButtonWrapper{
+      width: 100%;
+      position: absolute;
+      bottom: 5px;
+      left: 0;
+    }
+
+    .tagButtonWrapper button{
+      width: 40%;
+      display: inline-block;
+    }
+
+    .negbutton{
+      box-shadow: 0 0 5px #f55;
+    }
+
+    .posbutton{
+      box-shadow: 0 0 5px #5f5;
+    }
+
+
+    /* Wizard contents */
+
+
+    ul.crumb{
+      display: block;
+      margin: 0.5em;
+      padding: 0.5em;
+      font-size: 120%;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+
+    ul.crumb li{
+      display: inline-block;
+      width: auto;
+      padding: 0.5em 0 ;
+      margin: 0;
+    }
+
+    ul.crumb li::after{
+      content: " > ";
+    }
+
+    a.crumb{
+        cursor: pointer;
+    }
+
+    a.crumb:hover{
+        text-decoration: underline;
+    }
