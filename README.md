@@ -6,7 +6,8 @@ This is the front-end for the BLC WSD task.
 Requirements
 ------------
 
- * The `usastools` gem (see SVN repo)
+ * The `usastools` gem (available from the UCREL SVN repo)
+ * USAS lexicons in CLAWS c7 format (optional, needed only for pre-loading tags)
 
 Structure
 ---------
