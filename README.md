@@ -48,4 +48,11 @@ The input terms are entered in URL safe Base64.  This is to allow UTF-8 characte
     $ ./bin/b64words.rb < terms.txt > b64_terms.csv
 
 
+Modifying the Taxonomy
+----------------------
+The taxonomy used for tagging is located in `./js-data'.  The canonical copy is the YAML file---the JSON versions are merely for use by JQuery and should not be edited.
+
+To convert from the YAML version, use `./bin/yaml2json.rb`.  This takes a single argument, the YAML file to convert, and outputs to stdout:
+
+    $ ./bin/yaml2json.rb ./js-data/usas.clean.yml > ./js-data/usas.json
 
