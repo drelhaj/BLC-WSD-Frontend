@@ -102,13 +102,13 @@ class FormApplication
   OUTPUT_DIR        = './output'
 
   # Where to store registry of worker's word completions
-  AMT_WORKER_WORD_LIST = 'amt_worker_words.db'
+  AMT_WORKER_WORD_LIST = 'amt_worker_words.yml'
 
   require 'erb'
   require 'cgi' # escaping only
   require 'digest/md5'  # filenames
   require 'json'
-  require 'yaml'
+  require 'yaml/store'
   require 'securerandom' #UUIDs
   require 'base64'      # Word argument
   require 'usastools'   # Tag checking etc.
@@ -120,7 +120,7 @@ class FormApplication
   def initialize(lexicon_dir = nil)
     @tagparser        = USASTools::SemTag::Parser.new(true)
     @lexicons         = load_lexicons(lexicon_dir) if lexicon_dir
-    @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, "*.erb")).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
+    @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, '*.erb')).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
 
   # Is the action valid at this time?
@@ -132,21 +132,25 @@ class FormApplication
   def check_worker_id(args)
    
     # Load params
-    worker = args["worker"].to_s.strip
-    word   = args["word"].to_s.strip.downcase
+    worker = args['worker'].to_s.strip
+    word   = args['word'].to_s.strip.downcase
 
     # Load hash of who has done what
-    worker_words = {}
-    worker_words = YAML.load(File.read(AMT_WORKER_WORD_LIST)) if File.exist?(AMT_WORKER_WORD_LIST)
+    worker_words  = YAML::Store.new(AMT_WORKER_WORD_LIST)
+    previous_work = false
+    worker_words.transaction do 
+        puts "==\n\n[#{worker}]==> #{worker_words[worker]}"
+        previous_work = (worker_words[worker] && worker_words[worker].include?(word)) 
+    end
 
-    return compose_template("previous_work", binding) if(worker_words[worker] && worker_words[worker].include?(word))
-    return compose_template("no_previous_work", binding)
+    return compose_template('previous_work', binding) if previous_work
+    return compose_template('no_previous_work', binding)
 
   end
 
   # Show a debug form
   def go(args)
-    return compose_template("go", binding)
+    return compose_template('go', binding)
   end
 
   # Serve the form
@@ -155,23 +159,23 @@ class FormApplication
     # word        = args["word"].to_s.strip.downcase      # The word, from the database
     word = '';
     begin
-      word = Base64.urlsafe_decode64(args["word"])
+      word = Base64.urlsafe_decode64(args['word'])
       word.downcase!  ## XXX: optional...
     rescue
-      raise "No word (or invalid format)"
+      raise 'No word (or invalid format)'
     end
-    raise "No word" if word.to_s.length == 0
-    source = args["source"].to_s.gsub(/[^A-Za-z0-9]/, '').downcase       # Is this from AMT?
+    raise 'No word' if word.to_s.length == 0
+    source = args['source'].to_s.gsub(/[^A-Za-z0-9]/, '').downcase       # Is this from AMT?
 
     # Load language
     language = @valid_languages[0]
-    if(args["lang"])
-      language = args["lang"].to_s.gsub(/[^A-Za-z0-9]/, '').downcase       # What references do we show?
-      raise "Invalid language." unless @valid_languages.include?(language)
+    if(args['lang'])
+      language = args['lang'].to_s.gsub(/[^A-Za-z0-9]/, '').downcase       # What references do we show?
+      raise 'Invalid language.' unless @valid_languages.include?(language)
     end
 
     # Compute timeout "safely"
-    timeout = args["timeout"].to_s.to_i # timeout in ms
+    timeout = args['timeout'].to_s.to_i # timeout in ms
     timeout = 0 if timeout < 0 || timeout > MAX_TIMEOUT
 
     # Load tags, if we have a lexicon
@@ -179,27 +183,27 @@ class FormApplication
     tags    = load_tags(language, word) if @lexicons[language]
 
     refs_html = compose_template(File.join(LANGUAGE_REF_DIR, language), binding)
-    return compose_template("form", binding)
+    return compose_template('form', binding)
   end
 
   # Store the results and serve a receipt
   def add(args)
 
     # Check input is valid
-    receipt_code, fail_reason = handle_input(args["word"].to_s.strip.downcase,
-                                             args["from"].to_s.strip.downcase, 
-                                             args["tags"].to_s.strip, 
-                                             args["time"].to_s.strip.downcase,
-                                             args["worker"].to_s.strip.downcase,
-                                             args["lang"].to_s.strip.downcase)
+    receipt_code, fail_reason = handle_input(args['word'].to_s.strip.downcase,
+                                             args['from'].to_s.strip.downcase, 
+                                             args['tags'].to_s.strip, 
+                                             args['time'].to_s.strip.downcase,
+                                             args['worker'].to_s.strip,
+                                             args['lang'].to_s.strip.downcase)
     
     # Success page
     if receipt_code
-      return compose_template("receipt", binding)
+      return compose_template('receipt', binding)
     end
     
     # Failure page
-    return compose_template("fail", binding)
+    return compose_template('fail', binding)
   end
 
 
@@ -213,13 +217,13 @@ class FormApplication
     pl = USASTools::Lexicon::Parser.new(case_sensitive: false)
 
     lexicons = {}
-    Dir.glob( File.join(dir, "*.c7") ).each do |fn|
+    Dir.glob( File.join(dir, '*.c7') ).each do |fn|
       basename = File.basename(fn).gsub(/\.c7/, '')
       puts " - #{basename}..."
       lexicons[basename] = pl.parse( fn, Encoding::ISO_8859_1 )
     end
 
-    puts "Loaded #{lexicons.length} lexicon[s] (#{lexicons.keys.join(", ")})"
+    puts "Loaded #{lexicons.length} lexicon[s] (#{lexicons.keys.join(', ')})"
     return lexicons
   end
 
@@ -236,7 +240,7 @@ class FormApplication
     tags.each do |t|
       t = t.tags[0] if t.is_a?(USASTools::SemTag::CompoundSemTag)
       
-      selection << {prefix:   t.stack.join("_"),
+      selection << {prefix:   t.stack.join('_'),
                     name:     t.name,
                     positive: t.affinity >= 0
       }
@@ -247,7 +251,7 @@ class FormApplication
 
   # Parse input and save to disk (or return an error)
   def handle_input(word, source, tags_field, time_field, worker=nil, lang=nil)
-    return nil, "Invalid word returned!" if !check_string(word)
+    return nil, 'Invalid word returned!' if !check_string(word)
 
     tags = nil
     begin
@@ -255,8 +259,8 @@ class FormApplication
     rescue StandardError => e
       return nil, "Error parsing JSON: #{e}"
     end
-    return nil, "Invalid JSON submitted" if !tags
-    return nil, "You must select at least one tag" if tags[:tags].length == 0
+    return nil, 'Invalid JSON submitted' if !tags
+    return nil, 'You must select at least one tag' if tags[:tags].length == 0
 
     time = time_field.to_f / 60.0 / 1000.0 # convert to minutes
     # return nil, "Invalid timeout field" if time > MAX_TIMEOUT || time < 0
@@ -278,22 +282,12 @@ class FormApplication
     uuid          = SecureRandom.uuid()
     receipt_code  = "#{word_filename}#{uuid}"
 
-    # Open the file and read its contents if it exists, else create a blank array
-    submissions   = {}
-    submissions   = YAML.load( File.read(word_filepath) ) if File.exist?(word_filepath)
-  
-    # Add in the list indexed by UUID for easy lookup
-    submissions[uuid] = tags
+    # Write the submission into the existing list
+    submissions = YAML::Store.new(word_filepath)
+    submissions.transaction do submissions[uuid] = tags end
 
-    # Write to disk
-    fout = File.open( word_filepath, 'w' )
-    YAML.dump( submissions, fout )
-    fout.close
-
-    # ---- Lastly, maintain worker word list if provided
-    if(worker && worker.length > 0)
-      set_worker_word(worker, word)
-    end
+    # Lastly, maintain worker word list if worker ID is provided
+    set_worker_word(worker, word) if(worker && worker.length > 0)
 
     # Return the code 
     return receipt_code, nil
@@ -319,20 +313,20 @@ class FormApplication
     #              }
     # }
     #
-    raise "No order information"          unless obj["order"].is_a?(Array)
-    raise "No tag information"            unless obj["selection"].is_a?(Hash)
+    raise 'No order information'          unless obj['order'].is_a?(Array)
+    raise 'No tag information'            unless obj['selection'].is_a?(Hash)
 
 
-    # Somewhere to store "clean" copies of the data
+    # Somewhere to store 'clean' copies of the data
     out_of_order_tags = {}
 
     # Check formats.
-    obj["selection"].each{|k, v|
+    obj['selection'].each{|k, v|
 
       # Check formats
-      raise "No prefix for item #{k}"     unless v["prefix"].is_a?(String)
-      raise "No name for item #{k}"       unless v["name"].is_a?(String)
-      raise "No positivity for item #{k}" unless !!v["positive"] == v["positive"]
+      raise "No prefix for item #{k}"     unless v['prefix'].is_a?(String)
+      raise "No name for item #{k}"       unless v['name'].is_a?(String)
+      raise "No positivity for item #{k}" unless !!v['positive'] == v['positive']
 
       # Build the stack, converting numbers to numbers where possible
       # This is necessary because my parser is insanely strict
@@ -346,14 +340,14 @@ class FormApplication
       end
 
       # Put in main hash
-      out_of_order_tags[v["prefix"]] = tag
+      out_of_order_tags[v['prefix']] = tag
     }
 
 
     # Add to a hash in-order.
     hash = {}
     hash[:tags] = []
-    obj["order"].each{|prefix|
+    obj['order'].each{|prefix|
       hash[:tags] << out_of_order_tags[prefix.to_s]  
     }
 
@@ -387,19 +381,13 @@ class FormApplication
     # puts "######### #{worker} ######## #{word}"
 
     # Load hash of who has done what
-    worker_words = {}
-    worker_words = YAML.load(File.read(AMT_WORKER_WORD_LIST)) if File.exist?(AMT_WORKER_WORD_LIST)
-
-    # Set to array if she be not exist and add the word to the list
-    worker_words[worker] = [] unless worker_words[worker]
-    if(!worker_words[worker].include?(word))
-      worker_words[worker] << word
-
-      # Save to file
-      fout = File.open(AMT_WORKER_WORD_LIST, 'w')
-      YAML.dump(worker_words, fout)
-      fout.close
+    worker_words = YAML::Store.new(AMT_WORKER_WORD_LIST)
+    worker_words.transaction do
+        # Set to array if she be not exist and add the word to the list
+        worker_words[worker] = [] unless worker_words[worker]
+        worker_words[worker] << word if(!worker_words[worker].include?(word))
     end
+
   end
 
 
