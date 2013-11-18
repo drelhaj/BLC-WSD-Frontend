@@ -3,7 +3,9 @@
 
 class Server
 
+
   require 'webrick'
+
 
   def initialize(servlets   = {'/' => WEBrick::HTTPServlet::FileHandler},
                  iface      = 'localhost', 
@@ -13,6 +15,7 @@ class Server
     @port         = port
     @servlets     = servlets
   end
+
 
   def start
     # Process options from before
@@ -32,6 +35,7 @@ class Server
     # Serve
     server.start
   end
+
 end
 
 
@@ -41,12 +45,14 @@ end
 # Handles requests from the web side
 class FormServer < WEBrick::HTTPServlet::AbstractServlet
 
+
   # Construct a new ActionServer with a given set of actions,
   # and some options for callbacks( such as http auth ).
   def initialize(server, app, opts = {})
     super(server)
     @app = app
   end
+
 
   # Handle a get or post request 
   def do_request(request, response)
@@ -63,6 +69,7 @@ class FormServer < WEBrick::HTTPServlet::AbstractServlet
   alias :do_POST :do_request
 
   private
+
 
   # Handle a request to the server.
   # Called by get and post.
@@ -83,38 +90,41 @@ class FormServer < WEBrick::HTTPServlet::AbstractServlet
     $stderr.puts "*** [E]: #{e}\n#{e.backtrace.join("\n")}"
     return "Error: #{e}"
   end
+
 end
 
 
 
 # --------------------------------------------------------------------------
 
+# Handles requests from the BLC form.
 class FormApplication
 
   # Timeout in minutes
-  MAX_TIMEOUT = 120 # Two hours
+  MAX_TIMEOUT           = 120
 
   # Where to find web erb templates
-  TEMPLATE_DIR      = './templates'
-  LANGUAGE_REF_DIR  = 'references'
+  TEMPLATE_DIR          = './templates'
+  LANGUAGE_REF_DIR      = 'references'
 
   # Where to put output files
-  OUTPUT_DIR        = './output'
+  OUTPUT_DIR            = './output'
 
   # Where to store registry of worker's word completions
-  AMT_WORKER_WORD_LIST = 'amt_worker_words.yml'
+  AMT_WORKER_WORD_LIST  = 'amt_worker_words.yml'
 
-  require 'erb'
-  require 'cgi' # escaping only
-  require 'digest/md5'  # filenames
-  require 'json'
-  require 'yaml/store'
-  require 'securerandom' #UUIDs
-  require 'base64'      # Word argument
-  require 'usastools'   # Tag checking etc.
+  require 'erb'             # templating
+  require 'cgi'             # escaping only
+  require 'digest/md5'      # filenames
+  require 'json'            # tag list parsing
+  require 'yaml/store'      # AMT word list and output
+  require 'securerandom'    # UUIDs
+  require 'base64'          # Word argument
+  require 'usastools'       # Tag checking etc.
 
   # List valid actions for internal use
   VALID_ACTIONS = %w{form add check_worker_id go}
+
 
   # Initialise with a lexicon directory
   def initialize(lexicon_dir = nil)
@@ -123,10 +133,12 @@ class FormApplication
     @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, '*.erb')).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
 
+
   # Is the action valid at this time?
   def valid?(action)
     self.respond_to?(action.to_sym) && VALID_ACTIONS.include?(action)
   end
+
 
   # Check if a worker has done a word before
   def check_worker_id(args)
@@ -137,26 +149,21 @@ class FormApplication
 
     # Load hash of who has done what
     worker_words  = YAML::Store.new(AMT_WORKER_WORD_LIST)
-    previous_work = false
-    worker_words.transaction do 
-        puts "==\n\n[#{worker}]==> #{worker_words[worker]}"
-        previous_work = (worker_words[worker] && worker_words[worker].include?(word)) 
-    end
+    previous_work = worker_words.transaction do (worker_words[worker] && worker_words[worker].include?(word)) end
 
     return compose_template('previous_work', binding) if previous_work
     return compose_template('no_previous_work', binding)
-
   end
+
 
   # Show a debug form
   def go(args)
     return compose_template('go', binding)
   end
 
+
   # Serve the form
   def form(args)
-    
-    # word        = args["word"].to_s.strip.downcase      # The word, from the database
     word = '';
     begin
       word = Base64.urlsafe_decode64(args['word'])
@@ -186,9 +193,9 @@ class FormApplication
     return compose_template('form', binding)
   end
 
+
   # Store the results and serve a receipt
   def add(args)
-
     # Check input is valid
     receipt_code, fail_reason = handle_input(args['word'].to_s.strip.downcase,
                                              args['from'].to_s.strip.downcase, 
@@ -197,19 +204,17 @@ class FormApplication
                                              args['worker'].to_s.strip,
                                              args['lang'].to_s.strip.downcase)
     
-    # Success page
-    if receipt_code
-      return compose_template('receipt', binding)
-    end
-    
-    # Failure page
+    # Success page else failure page
+    return compose_template('receipt', binding) if receipt_code
     return compose_template('fail', binding)
   end
 
 
   private
 
-  # Load a lexicon from en existing file
+
+  # Load all lexicons from a directory and return them
+  # indexed by basename
   def load_lexicons(dir)
     require 'usastools/lexicon'
 
@@ -226,6 +231,7 @@ class FormApplication
     puts "Loaded #{lexicons.length} lexicon[s] (#{lexicons.keys.join(', ')})"
     return lexicons
   end
+
 
   # Using a lexicon, return a hash to be written into the page code
   def load_tags(language, word)
@@ -248,6 +254,7 @@ class FormApplication
 
     return selection.uniq
   end
+
 
   # Parse input and save to disk (or return an error)
   def handle_input(word, source, tags_field, time_field, worker=nil, lang=nil)
@@ -292,6 +299,7 @@ class FormApplication
     # Return the code 
     return receipt_code, nil
   end
+
 
   # Parse JSON from the selection form.
   # Ensures that the json is internally-consistent,
@@ -354,6 +362,7 @@ class FormApplication
     return hash
   end
 
+
   # Check a string to see if it is valid
   # Must be over 0 length and contain only
   # valid characters after removal of whitespace
@@ -366,6 +375,7 @@ class FormApplication
     return true
   end
 
+
   # Run a template
   def compose_template(name, bdg)
     puts "==> Composing template #{name}..."
@@ -375,6 +385,7 @@ class FormApplication
 
     return ERB.new(File.read(template)).result(bdg)
   end
+
 
   # Check if a worker has done a word before
   def set_worker_word(worker, word)
@@ -387,12 +398,12 @@ class FormApplication
         worker_words[worker] = [] unless worker_words[worker]
         worker_words[worker] << word if(!worker_words[worker].include?(word))
     end
-
   end
 
 
   # ----------------------------------------------------------------------------
   # Utilities for templates
+  #
   #
 
   # HTML escaping
@@ -400,28 +411,19 @@ class FormApplication
     CGI.escapeHTML(str.to_s)
   end
 
+
   # Quote ("") escaping
   def q(str)
     str.to_s.inspect[1..-2]
   end
+
 
   # Pretty-print number with commas (integer only)
   def n(num)
     num.to_s.reverse.gsub(/...(?=.)/,'\&,').reverse
   end
 
-
-
 end
-
-
-
-# --------------------------------------------------------------------------
-
-
-
-
-
 
 
 # ==========================================================================
