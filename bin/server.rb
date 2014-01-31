@@ -219,13 +219,23 @@ class FormApplication
     require 'usastools/lexicon'
 
     puts "Loading lexicons from #{dir}..."
-    pl = USASTools::Lexicon::Parser.new(case_sensitive: false)
+    pl = USASTools::Lexicon::Parser.new(
+      {semtag_parser: USASTools::SemTag::Parser.new(true, lambda{|*_| return true}, lambda{|*_| return true})}, 
+      {}, 
+      {
+        case_sensitive: false,
+        error_cb: lambda{ |line, msg, str|
+          $stderr.print " [E]#{line ? " line #{line} :--" : ''} #{msg}  \r"
+          return true } 
+      }
+
+    )
 
     lexicons = {}
-    Dir.glob( File.join(dir, '*.c7') ).each do |fn|
-      basename = File.basename(fn).gsub(/\.c7/, '')
+    Dir.glob( File.join(dir, '*_sw.usas') ).each do |fn|
+      basename = File.basename(fn).gsub(/_sw\.usas/, '')
       puts " - #{basename}..."
-      lexicons[basename] = pl.parse( fn, Encoding::ISO_8859_1 )
+      lexicons[basename] = pl.parse( fn )
     end
 
     puts "Loaded #{lexicons.length} lexicon[s] (#{lexicons.keys.join(', ')})"
