@@ -440,6 +440,10 @@ end
 # Entry point
 #
 
+# Server options
+INTERFACE = nil
+PORT      = 8080
+
 
 # Load various paths from command line
 LEXICON_ROOT = ARGV[0] || './lexicons'
@@ -463,6 +467,6 @@ servlets = {
 # Hook the servlets and start listening
 #
 # Sigint to close
-s = Server.new(servlets)
+s = Server.new(servlets, INTERFACE, PORT)
 s.start
 
