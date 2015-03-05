@@ -24,14 +24,12 @@ Execution
 
 To run the server on port 8080:
 
-    $ ./bin/server.rb LEXICONS THEME_DIR
+    $ ruby ./bin/server.rb LEXICONS THEME_DIR
 
-where:
+from the root of this repository, where:
 
  * `LEXICONS` is a directory containing lexicons (or symlinks thereto) named for their country codes, i.e. `en.c7` for English, 'nl.c7' for Dutch.  Default is `./lexicons`.
  * `THEME_DIR` is a directory served to the client for modification of the theme, containing css, images and js.  Default is `./themes/ucrel`
-
-
 
 Visit [http://localhost:8080/go](http://localhost:8080/go) for a debug interface.
 
