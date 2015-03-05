@@ -7,8 +7,8 @@ Requirements
 ------------
 
  * ruby ~> 2.0.0
- * The `usastools` gem (available from the UCREL SVN repo)
- * USAS lexicons in CLAWS c7 format (optional, needed only for pre-loading tags)
+ * The `usastools` gem (available from the UCREL SVN repo in `/usas/usastools`)
+ * USAS lexicons in CLAWS c7 format (optional, needed only for pre-loading tags, to be found in the UCREL SVN at `/usas/lexicons`)
 
 Structure
 ---------
