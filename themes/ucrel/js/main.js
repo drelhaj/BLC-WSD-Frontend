@@ -603,6 +603,13 @@ repeatFunction(repetetionTimes);
 
   // Submission system for form
   $( "#inputForm" ).submit(function( event ){
+	  
+	// check if categories limit exceeded
+	if(countCategories() >= 6){
+    $( "#categoriesDialog" ).dialog( "open" );
+    return false;
+  }
+  
     return submitAll();
   });
 

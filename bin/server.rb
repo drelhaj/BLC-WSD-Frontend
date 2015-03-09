@@ -74,7 +74,6 @@ class FormServer < WEBrick::HTTPServlet::AbstractServlet
   # Handle a request to the server.
   # Called by get and post.
   def make_request(request)
-    puts "\n\n"
     puts "==> Request, action='#{request.path}', params = #{request.query}..."
 
     action = request.path.to_s.split("/")[-1]
@@ -103,6 +102,9 @@ class FormApplication
   # Timeout in minutes
   MAX_TIMEOUT           = 120
 
+  # Taxonomy file
+  TAXONOMY = './js-data/usas.clean.yml'
+  
   # Where to find web erb templates
   TEMPLATE_DIR          = './templates'
   LANGUAGE_REF_DIR      = 'references'
@@ -128,7 +130,7 @@ class FormApplication
 
   # Initialise with a lexicon directory
   def initialize(lexicon_dir = nil)
-    @tagparser        = USASTools::SemTag::Parser.new(true)
+    @tagparser        = USASTools::SemTag::Parser.new(USASTools::SemTag::Taxonomy.new(TAXONOMY))
     @lexicons         = load_lexicons(lexicon_dir) if lexicon_dir
     @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, '*.erb')).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
