@@ -6773,22 +6773,19 @@ Z:
         what do you call it: 
     9:
       name: Trash can
-      desc: Trash can
-    84:
-      name: Empty0
-      desc: Empty tag
-    85:
-      name: Empty1
-      desc: Empty tag
-    86:
-      name: Empty1
-      desc: Empty tag
-    87:
-      name: Empty3
-      desc: Empty tag
-    88:
-      name: Empty4
-      desc: Empty tag
     99:
       name: Unmatched
       desc: Mis-spellings or words that have not been included in the lexicon as yet
+WWW:
+  name: Empty Tag Set
+  c:
+    0:
+      name: Empty0
+    1:
+      name: Empty1
+    2:
+      name: Empty1
+    3:
+      name: Empty3
+    4:
+      name: Empty4

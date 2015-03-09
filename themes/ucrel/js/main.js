@@ -198,10 +198,6 @@ function renderSingleTag(prefix, name, tag){
 }
 
 
-
-
-
-
 // tag wizard selection stack (used for back/forward)
 var tagSelectionStack = Array();
 
@@ -293,10 +289,10 @@ function renderTags(tags, prefix, title, description){
 // Tag Wizard functionality
 /* ---------------------------------------------------- */
 
+
 /** Display the root of the wizard.
  */
 function beginWizard(){
-
   // Add each item in the top-level
   renderTags( usasTags, "", "Select a Category", "Hover to see examples.");
 
@@ -319,6 +315,8 @@ function cancelWizard(){
 var selection = {};
 
 
+
+
 // Deselect an item, keeping the sortable selection UI widget
 // in order.
 function deselectTag(prefix){
@@ -337,6 +335,13 @@ function deselectTag(prefix){
       addItemToSortable( selection[order[i]] );
     }
   }
+}
+
+function countCategories(){
+	var categoriesCount = Object.keys(selection).length;
+	
+	return categoriesCount;
+	
 }
 
 // Add a tag to the sortable list at the bottom
@@ -375,7 +380,7 @@ function addItemToSortable(tag){
 // Add a tag to the internal selection, and
 // to the sortable UI list.
 function selectTag(prefix, name, positive){
-
+  
   // Clear wizard
   $( "div#wizardOverlay" ).hide();
   $( "div#wizardContent" ).hide();
@@ -394,6 +399,34 @@ function selectTag(prefix, name, positive){
 
 }
 
+
+// Add random tags to the internal selection, and
+// to the sortable UI list.
+function selectRandomTag(prefix, name, positive){
+
+//array with preselected categories (starting from Affect those are real categories, before that all are random).
+var randCats = ["Zoology","Rocket Science","Ninja Turtles","Hardware","Counter strategy","Global Warming","Psychological Thrillers","Quantum Physics","Unicorns","Office Tools","Computer Mining","Time is Not an Issue","Painting","Blogs","Adrenalin","Rain Therapy","Apostolic","Big Data","Mass media","Music Box","Water Bottles","Glass","Qualifications","Video games","Board games","American football","Broadcasting","Theatre","Museums","Yugoslavia","Magazines","Food culture","USAS WSD","Processor","Computer Component","Newspapers","Radio","Whitewater sports","Sailing","Exercise instructors","Dancing","Photography","Sculpture","Publication","Publishing","Television","Tennis","Swimming","Air Sports","Football","Classics","Critical Theory","Affect","Being","Classification","Evaluation","Comparing","Definite (+ modals)","Seem","Importance","Degree","Anatomy and physiology","Health and disease","Cleaning and personal care","Arts and crafts","Government, Politics & elections","Crime, law and order","Warfare, defence and the army; Weapons","GENERAL & ABSTRACT TERMS","THE BODY & THE INDIVIDUAL","ARTS & CRAFTS","EMOTIONAL ACTIONS, STATES & PROCESSES","FOOD & FARMING","GOVT. & THE PUBLIC DOMAIN","ARCHITECTURE, BUILDINGS, HOUSES & THE HOME","MONEY & COMMERCE","ENTERTAINMENT, SPORTS & GAMES","LIFE & LIVING THINGS","MOVEMENT, LOCATION, TRAVEL & TRANSPORT","NUMBERS & MEASUREMENT","SUBSTANCES, MATERIALS, OBJECTS & EQUIPMENT","EDUCATION","LINGUISTIC ACTIONS, STATES & PROCESSES","SOCIAL ACTIONS, STATES & PROCESSES","TIME","THE WORLD & OUR ENVIRONMENT","Social actions, states & processes","People","Relationship","Kin","Groups and affiliation","Obligation and necessity","Power relationship","Helping/hindering","Religion and the supernatural","Time","Time: Beginning and ending","Time: Old, new and young; age","Time: Early/late","General","Mental actions and processes","Sensory","Mental object","Attention","Deciding","Wanting; planning; choosing","Trying","Ability"];  
+  
+  //choose random category from the above array of categories.
+  var itemNumber =  Math.floor(Math.random() * (randCats.length - 1) + 1);
+  name = randCats[itemNumber];
+  // create random prefix so the system doesn't throw back an error when submitting the form (error: prefix not found)
+  prefix = 84+prefix;
+  prefix = "Z"+"_"+prefix ;
+
+    // Add to the list
+  var tag = {
+    prefix:   prefix,
+    name:     name,
+    positive: positive
+  };
+  
+  selection["" + prefix] = tag;
+  
+  // Add to the sortable list
+  addItemToSortable(tag);
+  
+}
 
 // Take all preselections in preSelections var and
 // add them to the page.
@@ -473,7 +506,12 @@ function checkForPreviousWork(worker, word){
   });
 }
 
-
+//repeat adding random category n number of times 
+function repeatFunction(number) {
+    for (var i = 0; i < number; i++) {
+selectRandomTag( i, "", true );
+}
+}
 
 /* ---------------------------------------------------- */
 // Pullup for page items. 
@@ -484,7 +522,11 @@ $(document).ready(function(){
   /* ------------------ Reasonably gracious pullup ------------------------- */
   // Hide the no js layer
   $( "#noJSHide" ).hide();
-
+  
+//repeat method n number of times
+var repetetionTimes = 3; 
+repeatFunction(repetetionTimes);  
+  
   /* ------------------ Set up timer ------------------------- */
   // Progress bar IF there's a time limit	(i.e. AMT tasks)
   var timeStarting = new Date();
@@ -559,7 +601,6 @@ $(document).ready(function(){
     return false;
   });
 
-
   // Submission system for form
   $( "#inputForm" ).submit(function( event ){
     return submitAll();
@@ -598,12 +639,17 @@ $(document).ready(function(){
   });
 
 
-  // Time out dialog
+  // Validation dialog
   $( "#validationDialog" ).dialog({
     autoOpen: false,
     modal: true
   });
 
+    // Categories dialog
+  $( "#categoriesDialog" ).dialog({
+    autoOpen: false,
+    modal: true
+  });
 
   // Make overlay resizable
   $( "#wizardContent" ).resizable();
@@ -611,6 +657,13 @@ $(document).ready(function(){
   // New tag click
   $( "#newTagButton" ).click(function() {
     // Show overlay
+	
+	// check if categories limit exceeded
+	if(countCategories() >= 5){
+    $( "#categoriesDialog" ).dialog( "open" );
+    return false;
+  }
+  
     $( "div#wizardOverlay" ).show();
     $( "div#wizardContent" ).show();
 

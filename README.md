@@ -7,8 +7,8 @@ Requirements
 ------------
 
  * ruby ~> 2.0.0
- * The `usastools` gem (available from the UCREL SVN repo in `/usas/usastools`)
- * USAS lexicons in CLAWS c7 format (optional, needed only for pre-loading tags, to be found in the UCREL SVN at `/usas/lexicons`)
+ * The `usastools` gem (available from the UCREL SVN repo)
+ * USAS lexicons in CLAWS c7 format (optional, needed only for pre-loading tags)
 
 Structure
 ---------
@@ -24,12 +24,14 @@ Execution
 
 To run the server on port 8080:
 
-    $ ruby ./bin/server.rb LEXICONS THEME_DIR
+    $ ./bin/server.rb LEXICONS THEME_DIR
 
-from the root of this repository, where:
+where:
 
  * `LEXICONS` is a directory containing lexicons (or symlinks thereto) named for their country codes, i.e. `en.c7` for English, 'nl.c7' for Dutch.  Default is `./lexicons`.
  * `THEME_DIR` is a directory served to the client for modification of the theme, containing css, images and js.  Default is `./themes/ucrel`
+
+
 
 Visit [http://localhost:8080/go](http://localhost:8080/go) for a debug interface.
 
@@ -54,5 +56,5 @@ The taxonomy used for tagging is located in `./js-data'.  The canonical copy is 
 
 To convert from the YAML version, use `./bin/yaml2json.rb`.  This takes a single argument, the YAML file to convert, and outputs to stdout:
 
-    $ ./bin/yaml2json.rb ./js-data/usas.clean.yml > ./js-data/usas.json.js
+    $ ./bin/yaml2json.rb ./js-data/usas.clean.yml > ./js-data/usas.json
 

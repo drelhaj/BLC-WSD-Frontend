@@ -12,7 +12,6 @@ require 'json'
 # Open file handle
 fin = File.open(ARGV[0], 'r')
 
-puts "/** Generated from usas.clean.json */\n var usasTags = "
 puts JSON.pretty_generate( YAML.load(fin) )
 
 

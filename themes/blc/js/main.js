@@ -339,6 +339,7 @@ function deselectTag(prefix){
   }
 }
 
+
 // Add a tag to the sortable list at the bottom
 // Does not add it to the model.
 function addItemToSortable(tag){
@@ -347,7 +348,6 @@ function addItemToSortable(tag){
   var label = tag.name;
   if(!tag.positive)
     label += " (negative association)";
-
   $( "#taglist" ).append( "<li class=\"ui-state-default\" id=\"" + tag.prefix + "\"><span class=\"ui-icon ui-icon-arrowthick-2-n-s\"></span>" + label + "<button class=\"ui-icon ui-icon-close\" id=\"close_" + tag.prefix + "\"></button></li>");
 
 
@@ -391,7 +391,6 @@ function selectTag(prefix, name, positive){
   
   // Add to the sortable list
   addItemToSortable(tag);
-
 }
 
 
