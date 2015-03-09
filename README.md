@@ -56,5 +56,5 @@ The taxonomy used for tagging is located in `./js-data'.  The canonical copy is 
 
 To convert from the YAML version, use `./bin/yaml2json.rb`.  This takes a single argument, the YAML file to convert, and outputs to stdout:
 
-    $ ./bin/yaml2json.rb ./js-data/usas.clean.yml > ./js-data/usas.json
+    $ ./bin/yaml2json.rb ./js-data/usas.clean.yml > ./js-data/usas.json.js
 
