@@ -74,6 +74,7 @@ class FormServer < WEBrick::HTTPServlet::AbstractServlet
   # Handle a request to the server.
   # Called by get and post.
   def make_request(request)
+    puts "\n\n"
     puts "==> Request, action='#{request.path}', params = #{request.query}..."
 
     action = request.path.to_s.split("/")[-1]
@@ -102,12 +103,12 @@ class FormApplication
   # Timeout in minutes
   MAX_TIMEOUT           = 120
 
-  # Taxonomy file
-  TAXONOMY = './js-data/usas.clean.yml'
-  
   # Where to find web erb templates
   TEMPLATE_DIR          = './templates'
   LANGUAGE_REF_DIR      = 'references'
+
+  # Taxonomy file from which JS is generated
+  TAXONOMY_FILE         = './js-data/usas.clean.yml'
 
   # Where to put output files
   OUTPUT_DIR            = './output'
@@ -130,7 +131,7 @@ class FormApplication
 
   # Initialise with a lexicon directory
   def initialize(lexicon_dir = nil)
-    @tagparser        = USASTools::SemTag::Parser.new(USASTools::SemTag::Taxonomy.new(TAXONOMY))
+    @tagparser        = USASTools::SemTag::Parser.new(USASTools::SemTag::Taxonomy.new(TAXONOMY_FILE))
     @lexicons         = load_lexicons(lexicon_dir) if lexicon_dir
     @valid_languages  = Dir.glob(File.join(TEMPLATE_DIR, LANGUAGE_REF_DIR, '*.erb')).map{ |x| File.basename(x).gsub(/\.erb$/, '') }
   end
@@ -169,12 +170,15 @@ class FormApplication
     word = '';
     begin
       word = Base64.urlsafe_decode64(args['word'])
+	  word.force_encoding("UTF-8")
       word.downcase!  ## XXX: optional...
-    rescue
-      raise 'No word (or invalid format)'
+
+    rescue StandardError=> e
+      raise "No word (or invalid format) #{e}"
     end
     raise 'No word' if word.to_s.length == 0
     source = args['source'].to_s.gsub(/[^A-Za-z0-9]/, '').downcase       # Is this from AMT?
+
 
     # Load language
     language = @valid_languages[0]
@@ -227,7 +231,9 @@ class FormApplication
       {
         case_sensitive: false,
         error_cb: lambda{ |line, msg, str|
-          $stderr.print " [E]#{line ? " line #{line} :--" : ''} #{msg}  \r"
+          #$stderr.print " [E]#{line ? " line #{line} :--" : ''} #{msg}  \r"
+		 # $stderr.print " [E]#{str}  \r"
+
           return true } 
       }
 
@@ -247,11 +253,14 @@ class FormApplication
 
   # Using a lexicon, return a hash to be written into the page code
   def load_tags(language, word)
+
+
     return [] unless @lexicons[language]
     selection = []
 
     # Find tags for all senses
     tags = []
+
     @lexicons[language].get_senses(word).each{ |s| tags += @lexicons[language].get(word, s) }
 
     # build selection list from tags
@@ -471,4 +480,3 @@ servlets = {
 # Sigint to close
 s = Server.new(servlets, INTERFACE, PORT)
 s.start
-

@@ -337,6 +337,7 @@ function deselectTag(prefix){
   }
 }
 
+//count number of labels
 function countCategories(){
 	var categoriesCount = Object.keys(selection).length;
 	
@@ -605,7 +606,7 @@ repeatFunction(repetetionTimes);
   $( "#inputForm" ).submit(function( event ){
 	  
 	// check if categories limit exceeded
-	if(countCategories() >= 6){
+	if(countCategories() >= 11){
     $( "#categoriesDialog" ).dialog( "open" );
     return false;
   }
@@ -666,7 +667,7 @@ repeatFunction(repetetionTimes);
     // Show overlay
 	
 	// check if categories limit exceeded
-	if(countCategories() >= 5){
+	if(countCategories() >= 11){
     $( "#categoriesDialog" ).dialog( "open" );
     return false;
   }

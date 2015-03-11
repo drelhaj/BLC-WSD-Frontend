@@ -26,7 +26,7 @@
 
         // Doesn't necessarily work for unicode input
         function base64_urlsafe(data) {
-            // http://kevin.vanzonneveld.net
+           /* // http://kevin.vanzonneveld.net
             // +   original by: Tyler Akins (http://rumkin.com)
             // +   improved by: Bayron Guevara
             // +   improved by: Thunder.m
@@ -72,7 +72,8 @@
             var r = data.length % 3;
 
             return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
-
+*/
+ return window.btoa(unescape(encodeURIComponent( data )));
         }
 
 
@@ -117,6 +118,8 @@
                 <option value="it">Italian</option>
                 <option value="nl">Dutch</option>
                 <option value="zh">Chinese</option>
+                <option value="pt">Portuguese</option>
+
                 <%# <option value=""></option> %>
             </select><br/>
     Timeout (min): <input type="number" name="timeout" value="30"/><br/>
