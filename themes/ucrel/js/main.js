@@ -289,6 +289,25 @@ function renderTags(tags, prefix, title, description){
 // Tag Wizard functionality
 /* ---------------------------------------------------- */
 
+  // shuffle (randomise) an array
+  function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 
 /** Display the root of the wizard.
  */
@@ -313,9 +332,6 @@ function cancelWizard(){
 // Store selections.
 // This is the model, and the sortable JQUI item is the view.
 var selection = {};
-
-
-
 
 // Deselect an item, keeping the sortable selection UI widget
 // in order.
@@ -394,7 +410,6 @@ function selectTag(prefix, name, positive){
     positive: positive
   };
   selection["" + prefix] = tag;
-  
   // Add to the sortable list
   addItemToSortable(tag);
 
@@ -405,13 +420,13 @@ function selectTag(prefix, name, positive){
 // to the sortable UI list.
 function selectRandomTag(prefix, name, positive){
 
-//array with preselected categories (starting from Affect those are real categories, before that all are random).
-var randCats = ["Zoology","Rocket Science","Ninja Turtles","Hardware","Counter strategy","Global Warming","Psychological Thrillers","Quantum Physics","Unicorns","Office Tools","Computer Mining","Time is Not an Issue","Painting","Blogs","Adrenalin","Rain Therapy","Apostolic","Big Data","Mass media","Music Box","Water Bottles","Glass","Qualifications","Video games","Board games","American football","Broadcasting","Theatre","Museums","Yugoslavia","Magazines","Food culture","USAS WSD","Processor","Computer Component","Newspapers","Radio","Whitewater sports","Sailing","Exercise instructors","Dancing","Photography","Sculpture","Publication","Publishing","Television","Tennis","Swimming","Air Sports","Football","Classics","Critical Theory","Affect","Being","Classification","Evaluation","Comparing","Definite (+ modals)","Seem","Importance","Degree","Anatomy and physiology","Health and disease","Cleaning and personal care","Arts and crafts","Government, Politics & elections","Crime, law and order","Warfare, defence and the army; Weapons","GENERAL & ABSTRACT TERMS","THE BODY & THE INDIVIDUAL","ARTS & CRAFTS","EMOTIONAL ACTIONS, STATES & PROCESSES","FOOD & FARMING","GOVT. & THE PUBLIC DOMAIN","ARCHITECTURE, BUILDINGS, HOUSES & THE HOME","MONEY & COMMERCE","ENTERTAINMENT, SPORTS & GAMES","LIFE & LIVING THINGS","MOVEMENT, LOCATION, TRAVEL & TRANSPORT","NUMBERS & MEASUREMENT","SUBSTANCES, MATERIALS, OBJECTS & EQUIPMENT","EDUCATION","LINGUISTIC ACTIONS, STATES & PROCESSES","SOCIAL ACTIONS, STATES & PROCESSES","TIME","THE WORLD & OUR ENVIRONMENT","Social actions, states & processes","People","Relationship","Kin","Groups and affiliation","Obligation and necessity","Power relationship","Helping/hindering","Religion and the supernatural","Time","Time: Beginning and ending","Time: Old, new and young; age","Time: Early/late","General","Mental actions and processes","Sensory","Mental object","Attention","Deciding","Wanting; planning; choosing","Trying","Ability"];  
+//array with preselected categories (all are random and unrelated).
+var randCats = ["Zoology","Rocket Science","Ninja Turtles","Hardware","Counter strategy","Global Warming","Psychological Thrillers","Quantum Physics","Unicorns","Office Tools","Computer Mining","Time is Not an Issue","Painting","Blogs","Adrenalin","Rain Therapy","Apostolic","Big Data","Mass media","Music Box","Water Bottles","Glass","Qualifications","Video games","Board games","American football","Broadcasting","Theatre","Museums","Yugoslavia","Magazines","Food culture","USAS WSD","Processor","Computer Component","Newspapers","Radio","Whitewater sports","Sailing","Exercise instructors","Dancing","Photography","Sculpture","Publication","Publishing","Television","Tennis","Swimming","Air Sports","Football","Classics","Critical Theory"];  
   
   //choose random category from the above array of categories.
   var itemNumber =  Math.floor(Math.random() * (randCats.length - 1) + 1);
   name = randCats[itemNumber];
-  // create random prefix so the system doesn't throw back an error when submitting the form (error: prefix not found)
+  // The Z semantic tags 84-88 are all random (unrelated) tags, just to test the users of the system.
   prefix = 84+prefix;
   prefix = "Z"+"_"+prefix ;
 
@@ -431,12 +446,21 @@ var randCats = ["Zoology","Rocket Science","Ninja Turtles","Hardware","Counter s
 
 // Take all preselections in preSelections var and
 // add them to the page.
+// shuffle the array of tags
+// injected some random tags before and after the preselected ones.
 function preSelectTags(){
-  for(var i=0; i<preSelections.length; i++){
-    var t = preSelections[i];
-    selectTag(t["prefix"], t["name"], t["positive"]);
-  }
+	var rand = shuffle(preSelections);
+  for(var i=0; i<rand.length; i++){
+    var t = rand[i];
+	if (i%2 && i<3){
+	 selectRandomTag( i, "", true );
 }
+    selectTag(t["prefix"], t["name"], t["positive"]);
+		 if ((i==0 || i%2==1 || i%2!=0) && i<3){
+	 selectRandomTag( i, "", true );
+}
+  }
+  }
 
 
 // Return an Array of prefixes from the selected model
@@ -525,8 +549,8 @@ $(document).ready(function(){
   $( "#noJSHide" ).hide();
   
 //repeat method n number of times
-var repetetionTimes = 3; 
-repeatFunction(repetetionTimes);  
+//var repetetionTimes = 3; 
+//repeatFunction(repetetionTimes);  
   
   /* ------------------ Set up timer ------------------------- */
   // Progress bar IF there's a time limit	(i.e. AMT tasks)
@@ -606,7 +630,7 @@ repeatFunction(repetetionTimes);
   $( "#inputForm" ).submit(function( event ){
 	  
 	// check if categories limit exceeded
-	if(countCategories() >= 11){
+	if(countCategories() > 10){
     $( "#categoriesDialog" ).dialog( "open" );
     return false;
   }
@@ -667,7 +691,7 @@ repeatFunction(repetetionTimes);
     // Show overlay
 	
 	// check if categories limit exceeded
-	if(countCategories() >= 11){
+	if(countCategories() >= 10){
     $( "#categoriesDialog" ).dialog( "open" );
     return false;
   }

@@ -295,9 +295,10 @@ class FormApplication
 
     # ---- validation done
     # Now augment tag information with time, date, etc.
+	  
     tags[:time]   = Time.now
     tags[:source] = source 
-    tags[:word]   = word
+    tags[:word]   = word.force_encoding("UTF-8")
     tags[:lang]   = lang if @valid_languages.include?(lang)
     
     # Now generate unique IDs and write to disk
