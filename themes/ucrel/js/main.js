@@ -289,7 +289,7 @@ function renderTags(tags, prefix, title, description){
 // Tag Wizard functionality
 /* ---------------------------------------------------- */
 
-  // shuffle (randomise) an array
+  // shuffle (randomise) an array (this works for the tags array.).
   function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex ;
 
