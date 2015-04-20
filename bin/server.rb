@@ -231,7 +231,7 @@ class FormApplication
       {
         case_sensitive: false,
         error_cb: lambda{ |line, msg, str|
-          #$stderr.print " [E]#{line ? " line #{line} :--" : ''} #{msg}  \r"
+          $stderr.puts " [E]#{line ? " line #{line} :--" : ''} #{msg} "
 		 # $stderr.print " [E]#{str}  \r"
 
           return true } 
@@ -261,7 +261,9 @@ class FormApplication
     # Find tags for all senses
     tags = []
 
-    @lexicons[language].get_senses(word).each{ |s| tags += @lexicons[language].get(word, s) }
+    senses = @lexicons[language].get_senses(word)
+	fail "No senses found for word: '#{word}' in lexicon for '#{language}'" unless senses
+	senses.each{ |s| tags += @lexicons[language].get(word, s) }
 
     # build selection list from tags
     tags.each do |t|

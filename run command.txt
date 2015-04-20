@@ -1,0 +1,1 @@
+E:\BLC-WSD-Frontend>ruby bin/server.rb E:/BLC-WSD-Frontend/lexicons/ themes/ucrel
