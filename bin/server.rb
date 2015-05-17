@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-
+Encoding.default_external = "UTF-8"
 
 class Server
 
@@ -231,7 +231,7 @@ class FormApplication
       {
         case_sensitive: false,
         error_cb: lambda{ |line, msg, str|
-          $stderr.puts " [E]#{line ? " line #{line} :--" : ''} #{msg} "
+         # $stderr.puts " [E]#{line ? " line #{line} :--" : ''} #{msg} "
 		 # $stderr.print " [E]#{str}  \r"
 
           return true } 
