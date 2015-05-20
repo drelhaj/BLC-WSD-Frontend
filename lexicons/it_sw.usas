@@ -14500,6 +14500,7 @@ precipitoso         	 ADJ       	 N3.8+ A1.3-
 precipitoso         	 ADV       	 M6
 precisare           	 VER:infi  	 A4.2+/Q2.2
 precisazione        	 NOM       	 P1 X9.1 S6+ A1.7+
+precisione          	 NN1       	 A5.3+ 
 preciso             	 ADJ       	 S1.2 G2.2+
 preciso             	 ADV       	 A14 T3--- T1.3- N3.3---
 precursore          	 ADJ       	 S4/T1.1.1 N4
@@ -14561,6 +14562,7 @@ presa               	 NOM       	 A1.1.1 O2 A9+ X3.3 H2/M4 H2/M5 S7.1+ E2-/Q2.2 
 presa               	 VER:infi  	 A1.1.1 A10+ M6 H1 A9+ T1.3 C1 M2 S7.1- A2.1+ X2.4 S6+ S7.4+ N3 P1 M1 X2.5+ F1@ F2@ Q1.2@ B3@ E2-/Q2.2 E3- X8+ I2.2 X2.1 S7.1+/A1.7+ O3 I2.2/Q2.2
 presagio            	 NOM       	 N4 N4/S2mf Q1.1 A6.2+ X4.1 Q1.2 O4.1 S9 B2 M2 K2
 presagio            	 VER:infi  	 Q1.2 Q1.1 G2.1 I3.1 S9
+presagire           	 VV0       	 X2.6+ 
 prescienza          	 NOM       	 X2.6+
 prescritto          	 NOM       	 G2.1 A1.7+/G1.1
 prescrivere         	 VER:infi  	 X7+ S6+
@@ -14668,6 +14670,7 @@ problema            	 NOM       	 Q2.2 X4.1 X2.5- K5.2/X4.1
 problema            	 VER:infi  	 Q2.2 X2.5-
 proboscide          	 NOM       	 B1 F3@
 procacciare         	 VER:infi  	 I2.2
+procedere           	 NN1       	 I1.1 
 procedura           	 NOM       	 A1.1.1 I3.1/S5+c
 procedura           	 VER:infi  	 A1.1.1
 processabile        	 ADJ       	 A1.1.1
@@ -14697,6 +14700,7 @@ professore          	 NOM       	 P1/S2mf
 profeta             	 NOM       	 S9/S2mf
 profetizzare        	 VER:infi  	 X2.1/A7- X2.4/S9
 proficuo            	 ADJ       	 A1.5.2+
+profilare           	 NN1       	 B1 Q1.1
 profilarsi          	 VER:infi  	 O4.4
 profitto            	 NOM       	 A6.1-
 profitto            	 VER:infi  	 A1.1.2 S1.2.2+
@@ -14741,6 +14745,7 @@ prolunga            	 VER:infi  	 A1.1.1
 prolungamento       	 NOM       	 H1 T1.3+/A2.1 N3.2+/A2.1 N5+/A2.1 Q1.3 B4
 prolungare          	 VER:infi  	 N3.3 T1.3 A1.7- N3.2+/A2.1 N5+/A2.1 T1.3+/A2.1 A9-
 promemoria          	 NOM       	 Q1.2
+promessa            	 NN1       	 A7+/Q2.1 X9.1+ 
 prominente          	 ADJ       	 A5.1++ A11.2+ I1.2 A1.9
 prominenza          	 NOM       	 H5 W3
 promontorio         	 NOM       	 B1 O2 W3 I1.3 G1.1 Q1.2 L2
@@ -14787,6 +14792,7 @@ proprio             	 VER:infi  	 A9+
 prora               	 NOM       	 B1 S7.1+/S2mf P1/S2mf X1 M6 A4.1 S2mf F2 H5/M4%
 prora               	 VER:infi  	 S7.1+ K5.1 M1 N5 A2.1+ A11.1+ Q1.2 T1.1.3
 proscenio           	 NOM       	 B5
+proscioglimento     	 NN1       	 G2.1 
 proscioglimeto      	 NOM       	 A1.7-/M1 B1 O1.2
 proscioglimeto      	 VER:infi  	 A1.7-/M1 I3.1 I1.2 O1.2 G3
 prosciugamento      	 ADJ       	 B2-
