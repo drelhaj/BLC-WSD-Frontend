@@ -1,1 +1,5 @@
 E:\BLC-WSD-Frontend>ruby bin/server.rb E:/BLC-WSD-Frontend/lexicons/ themes/ucrel
+
+
+Remove big files from previous commits:
+git filter-branch -f --index-filter "git rm -rf --cached --ignore-unmatch FILENAME" -- --all
